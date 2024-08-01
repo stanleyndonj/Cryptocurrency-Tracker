@@ -13,8 +13,11 @@ aside {
     position: fixed;
     height: 100%;
     top: 0;
-    left: 0;
+    left: -200px;
     overflow-y: auto;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
 }
 
 aside h1 {
@@ -36,9 +39,14 @@ nav ul li a {
 }
 
 main {
-    margin-left: 200px;
+    margin-left: 0;
     padding: 20px;
     flex: 1;
+    transition: margin-left 0.3s ease;
+}
+
+.main-blurred {
+    filter: blur(5px);
 }
 
 .hidden {
@@ -113,5 +121,4 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
-
 

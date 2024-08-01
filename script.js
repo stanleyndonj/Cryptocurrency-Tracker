@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const top10ChartCtx = document.getElementById("top10Chart").getContext("2d");
     const currencySelect = document.getElementById("currency-select");
     const favoritesToggle = document.getElementById("favorites-toggle");
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.getElementById("main-content");
 
     let cryptoData = [];
     let favorites = [];
@@ -113,7 +115,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     favoritesToggle.addEventListener("click", () => {
-        favoritesList.classList.toggle("hidden");
+        const isSidebarVisible = sidebar.style.left === '0px';
+        if (isSidebarVisible) {
+            sidebar.style.left = '-200px';
+            mainContent.classList.remove('main-blurred');
+        } else {
+            sidebar.style.left = '0px';
+            mainContent.classList.add('main-blurred');
+        }
     });
 
     currencySelect.addEventListener("change", (event) => {
@@ -149,7 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateFavoritesList();
     fetchCryptoData(currentCurrency);
 });
-
 
 
 
