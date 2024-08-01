@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <aside>
+        <h1>Crypto Tracking</h1>
+        <nav>
+            <ul>
+                <li><a href="#" id="favorites-toggle">Favorites</a></li>
+            </ul>
+        </nav>
+        <div id="favorites-list" class="hidden"></div>
+    </aside>
+    <main>
+        <div class="top-bar">
+            <input type="text" id="search" placeholder="Search for a cryptocurrency">
+            <select id="currency-select">
+                <option value="usd">USD</option>
+                <option value="eur">EUR</option>
+                <option value="gbp">GBP</option>
+                <!-- Add more currencies as needed -->
+            </select>
+        </div>
+        <section id="dashboard" class="active">
+            <div class="top-section">
+                <div>
+                    <h2>Bitcoin</h2>
+                    <p id="btc-price">$23,376.76</p>
+                    <p id="btc-change">24 Hour Change 1.45%</p>
+                </div>
+                <div>
+                    <h2>Ethereum</h2>
+                    <p id="eth-price">$1,650.13</p>
+                    <p id="eth-change">24 Hour Change -0.12%</p>
+                </div>
+                <div>
+                    <h2>Last Synced</h2>
+                    <p id="last-synced">8/3/2022, 8:00 AM</p>
+                </div>
+            </div>
+            <div class="bottom-section">
+                <h2>Top 10 Expensive Cryptocurrencies</h2>
+                <canvas id="top10Chart"></canvas>
+            </div>
+            <div class="crypto-list-section">
+                <h2>All Cryptocurrencies</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>24H % Change</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crypto-list"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
