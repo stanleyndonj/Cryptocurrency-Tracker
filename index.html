@@ -10,7 +10,7 @@
 <body>
     <button id="sidebar-toggle">&#9776;</button>
     <aside id="sidebar">
-        <h1>Crypto Tracking</h1>
+        <h1>Side bar</h1>
         <nav>
             <ul>
                 <li><a href="#" id="favorites-toggle">Favorites</a></li>
@@ -19,10 +19,8 @@
         </nav>
     </aside>
     <main>
-        <div class="top-bar">
-            <input type="text" id="search" placeholder="Search for a cryptocurrency">
-            <button id="search-btn">Search</button>
-            <select id="currency-select">
+        <div class="top-bar">     
+            <select id="currency-select" >
                 <option value="usd">USD</option>
                 <option value="eur">EUR</option>
                 <option value="gbp">GBP</option>
@@ -30,6 +28,10 @@
             </select>
             <button id="convert-btn">Convert</button>
             <button id="dark-mode-toggle">Dark Mode</button>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Search for a cryptocurrency">
+            <button id="search-btn">Search</button>
         </div>
         <section id="dashboard" class="active">
             <div class="top-section">
@@ -39,6 +41,7 @@
                     <p id="btc-change">24 Hour Change 1.45%</p>
                     <p id="btc-market-cap">Market Cap: $438,253,000</p>
                     <p id="btc-volume">Volume: $23,376,760</p>
+                    <p id="btc-supply">Supply: 18,000,000 BTC</p>
                 </div>
                 <div>
                     <h2>Ethereum</h2>
@@ -46,6 +49,7 @@
                     <p id="eth-change">24 Hour Change -0.12%</p>
                     <p id="eth-market-cap">Market Cap: $198,374,000</p>
                     <p id="eth-volume">Volume: $1,650,130</p>
+                    <p id="eth-supply">Supply: 115,000,000 ETH</p>
                 </div>
                 <div>
                     <h2>Last Synced</h2>

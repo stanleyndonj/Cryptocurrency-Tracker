@@ -1,4 +1,3 @@
-// script.js
 document.addEventListener("DOMContentLoaded", () => {
     const apiUrl = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd";
     const cryptoList = document.getElementById("crypto-list");
@@ -9,75 +8,120 @@ document.addEventListener("DOMContentLoaded", () => {
     const btcChange = document.getElementById("btc-change");
     const btcMarketCap = document.getElementById("btc-market-cap");
     const btcVolume = document.getElementById("btc-volume");
+    const btcSupply = document.getElementById("btc-supply");
     const ethPrice = document.getElementById("eth-price");
     const ethChange = document.getElementById("eth-change");
     const ethMarketCap = document.getElementById("eth-market-cap");
     const ethVolume = document.getElementById("eth-volume");
+    const ethSupply = document.getElementById("eth-supply");
     const lastSynced = document.getElementById("last-synced");
     const top10ChartCtx = document.getElementById("top10Chart").getContext("2d");
     const currencySelect = document.getElementById("currency-select");
-    const favoritesToggle = document.getElementById("favorites-toggle");
+    const convertBtn = document.getElementById("convert-btn");
     const sidebarToggle = document.getElementById("sidebar-toggle");
+    const favoritesToggle = document.getElementById("favorites-toggle");
     const darkModeToggle = document.getElementById("dark-mode-toggle");
-    const body = document.body;
-
     let cryptoData = [];
-    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    let top10Chart = null;
 
-    // Toggle sidebar
-    sidebarToggle.addEventListener("click", () => {
-        document.body.classList.toggle("sidebar-hidden");
-    });
-
-    // Toggle dark mode
-    darkModeToggle.addEventListener("click", () => {
-        body.classList.toggle("dark-mode");
-    });
-
-    // Fetch and display cryptocurrency data
-    async function fetchCryptocurrencies() {
+    const fetchCryptoData = async (currency = "usd") => {
         try {
-            const response = await fetch(apiUrl);
+            const response = await fetch(`${apiUrl}&order=market_cap_desc&per_page=10&page=1&sparkline=false&vs_currency=${currency}`);
             const data = await response.json();
             cryptoData = data;
-            displayCryptocurrencies(data);
-            displayTop10Chart(data);
-            updateDashboard(data);
+            displayCryptoData(currency);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }
+    };
 
-    // Display the list of cryptocurrencies
-    function displayCryptocurrencies(data) {
+    const displayCryptoData = (currency) => {
         cryptoList.innerHTML = "";
-        data.forEach((crypto) => {
-            const item = document.createElement("div");
-            item.classList.add("crypto-item");
-            item.innerHTML = `
-                <img src="${crypto.image}" alt="${crypto.name}">
-                <h3>${crypto.name}</h3>
-                <p>Current Price: $${crypto.current_price}</p>
-                <button data-crypto-id="${crypto.id}">Add to Favorites</button>
-            `;
-            item.querySelector("button").addEventListener("click", () => addToFavorites(crypto));
-            cryptoList.appendChild(item);
-        });
-    }
+        const formatCurrency = (value) => {
+            const formatter = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: currency.toUpperCase(),
+            });
+            return formatter.format(value);
+        };
 
-    // Display the top 10 cryptocurrencies in a chart
-    function displayTop10Chart(data) {
-        const top10 = data.slice(0, 10);
-        new Chart(top10ChartCtx, {
+        cryptoData.forEach((coin) => {
+            const cryptoItem = document.createElement("div");
+            cryptoItem.className = "crypto-item";
+            cryptoItem.innerHTML = `
+                <img src="${coin.image}" alt="${coin.name}">
+                <h3>${coin.name}</h3>
+                <p>${formatCurrency(coin.current_price)}</p>
+                <p>24h: ${coin.price_change_percentage_24h.toFixed(2)}%</p>
+                <p>Market Cap: ${formatCurrency(coin.market_cap)}</p>
+                <p>Volume: ${formatCurrency(coin.total_volume)}</p>
+                <p>Supply: ${coin.circulating_supply.toFixed(0)} ${coin.symbol.toUpperCase()}</p>
+                <button class="add-favorite-btn" data-id="${coin.id}">Add to Favorites</button>
+            `;
+            cryptoList.appendChild(cryptoItem);
+        });
+
+        updateMainCryptoInfo(currency);
+        updateTop10Chart(currency);
+    };
+
+    const updateMainCryptoInfo = (currency) => {
+        const btc = cryptoData.find((coin) => coin.id === "bitcoin");
+        const eth = cryptoData.find((coin) => coin.id === "ethereum");
+
+        const formatCurrency = (value) => {
+            const formatter = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: currency.toUpperCase(),
+            });
+            return formatter.format(value);
+        };
+
+        if (btc) {
+            btcPrice.textContent = formatCurrency(btc.current_price);
+            btcChange.textContent = `24 Hour Change ${btc.price_change_percentage_24h.toFixed(2)}%`;
+            btcMarketCap.textContent = `Market Cap: ${formatCurrency(btc.market_cap)}`;
+            btcVolume.textContent = `Volume: ${formatCurrency(btc.total_volume)}`;
+            btcSupply.textContent = `Supply: ${btc.circulating_supply.toFixed(0)} BTC`;
+        }
+
+        if (eth) {
+            ethPrice.textContent = formatCurrency(eth.current_price);
+            ethChange.textContent = `24 Hour Change ${eth.price_change_percentage_24h.toFixed(2)}%`;
+            ethMarketCap.textContent = `Market Cap: ${formatCurrency(eth.market_cap)}`;
+            ethVolume.textContent = `Volume: ${formatCurrency(eth.total_volume)}`;
+            ethSupply.textContent = `Supply: ${eth.circulating_supply.toFixed(0)} ETH`;
+        }
+
+        lastSynced.textContent = new Date().toLocaleString();
+    };
+
+    const updateTop10Chart = (currency) => {
+        const top10Names = cryptoData.map((coin) => coin.name);
+        const top10Prices = cryptoData.map((coin) => coin.current_price);
+
+        const formatCurrency = (value) => {
+            const formatter = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: currency.toUpperCase(),
+            });
+            return formatter.format(value);
+        };
+
+        if (top10Chart) {
+            top10Chart.destroy();
+        }
+
+        top10Chart = new Chart(top10ChartCtx, {
             type: "bar",
             data: {
-                labels: top10.map((crypto) => crypto.name),
+                labels: top10Names,
                 datasets: [
                     {
-                        label: "Price (USD)",
-                        data: top10.map((crypto) => crypto.current_price),
-                        backgroundColor: "rgba(75, 192, 192, 0.2)",
-                        borderColor: "rgba(75, 192, 192, 1)",
+                        label: `Price in ${currency.toUpperCase()}`,
+                        data: top10Prices,
+                        backgroundColor: "rgba(54, 162, 235, 0.2)",
+                        borderColor: "rgba(54, 162, 235, 1)",
                         borderWidth: 1,
                     },
                 ],
@@ -86,71 +130,96 @@ document.addEventListener("DOMContentLoaded", () => {
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return formatCurrency(value);
+                            },
+                        },
                     },
                 },
             },
         });
-    }
+    };
 
-    // Update the dashboard with Bitcoin and Ethereum data
-    function updateDashboard(data) {
-        const btc = data.find((crypto) => crypto.id === "bitcoin");
-        const eth = data.find((crypto) => crypto.id === "ethereum");
-        btcPrice.textContent = `$${btc.current_price}`;
-        btcChange.textContent = `24 Hour Change ${btc.price_change_percentage_24h.toFixed(2)}%`;
-        btcMarketCap.textContent = `Market Cap: $${btc.market_cap}`;
-        btcVolume.textContent = `Volume: $${btc.total_volume}`;
-        ethPrice.textContent = `$${eth.current_price}`;
-        ethChange.textContent = `24 Hour Change ${eth.price_change_percentage_24h.toFixed(2)}%`;
-        ethMarketCap.textContent = `Market Cap: $${eth.market_cap}`;
-        ethVolume.textContent = `Volume: $${eth.total_volume}`;
-        lastSynced.textContent = new Date().toLocaleString();
-    }
+    const addFavorite = (coin) => {
+        const favoriteItem = document.createElement("div");
+        favoriteItem.className = "favorite-item";
+        favoriteItem.innerHTML = `
+            <span>${coin.name}</span>
+            <button class="remove-favorite-btn" data-id="${coin.id}">Remove</button>
+        `;
+        favoritesList.appendChild(favoriteItem);
+        saveFavoriteToLocalStorage(coin);
+    };
 
-    // Add a cryptocurrency to favorites
-    function addToFavorites(crypto) {
-        if (!favorites.some((fav) => fav.id === crypto.id)) {
-            favorites.push(crypto);
-            updateFavorites();
-            localStorage.setItem("favorites", JSON.stringify(favorites));
+    const removeFavorite = (coinId) => {
+        const favoriteItems = favoritesList.getElementsByClassName("favorite-item");
+        for (const item of favoriteItems) {
+            if (item.querySelector("button").dataset.id === coinId) {
+                item.remove();
+                break;
+            }
         }
-    }
+        removeFavoriteFromLocalStorage(coinId);
+    };
 
-    // Remove a cryptocurrency from favorites
-    function removeFromFavorites(cryptoId) {
-        favorites = favorites.filter((crypto) => crypto.id !== cryptoId);
-        updateFavorites();
+    const saveFavoriteToLocalStorage = (coin) => {
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        favorites.push(coin);
         localStorage.setItem("favorites", JSON.stringify(favorites));
-    }
+    };
 
-    // Update the favorites list
-    function updateFavorites() {
-        favoritesList.innerHTML = favorites.map((crypto) => `
-            <div class="favorite-item">
-                <span>${crypto.name}</span>
-                <button data-crypto-id="${crypto.id}">Remove</button>
-            </div>
-        `).join("");
+    const removeFavoriteFromLocalStorage = (coinId) => {
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        const updatedFavorites = favorites.filter((coin) => coin.id !== coinId);
+        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+    };
 
-        favoritesList.querySelectorAll("button").forEach((button) => {
-            button.addEventListener("click", () => removeFromFavorites(button.getAttribute("data-crypto-id")));
-        });
-    }
+    const loadFavoritesFromLocalStorage = () => {
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        favorites.forEach((coin) => addFavorite(coin));
+    };
 
-    // Handle the search functionality
     searchBtn.addEventListener("click", () => {
         const searchTerm = searchInput.value.toLowerCase();
-        const filteredData = cryptoData.filter((crypto) =>
-            crypto.name.toLowerCase().includes(searchTerm)
-        );
-        displayCryptocurrencies(filteredData);
+        const filteredData = cryptoData.filter((coin) => coin.name.toLowerCase().includes(searchTerm));
+        displayCryptoData(filteredData);
     });
 
-    // Handle favorites toggle
+    cryptoList.addEventListener("click", (event) => {
+        if (event.target.classList.contains("add-favorite-btn")) {
+            const coinId = event.target.dataset.id;
+            const coin = cryptoData.find((coin) => coin.id === coinId);
+            if (coin) {
+                addFavorite(coin);
+            }
+        }
+    });
+
+    favoritesList.addEventListener("click", (event) => {
+        if (event.target.classList.contains("remove-favorite-btn")) {
+            const coinId = event.target.dataset.id;
+            removeFavorite(coinId);
+        }
+    });
+
+    convertBtn.addEventListener("click", () => {
+        const selectedCurrency = currencySelect.value;
+        fetchCryptoData(selectedCurrency);
+    });
+
+    sidebarToggle.addEventListener("click", () => {
+        document.body.classList.toggle("sidebar-hidden");
+    });
+
     favoritesToggle.addEventListener("click", () => {
         favoritesList.classList.toggle("hidden");
     });
 
-    // Fetch initial data
-    fetchCryptocurrencies();
+    darkModeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+    });
+
+    fetchCryptoData();
+    loadFavoritesFromLocalStorage();
 });
