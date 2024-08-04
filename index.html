@@ -8,24 +8,28 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <button id="sidebar-toggle">&#9776;</button>
     <aside id="sidebar">
         <h1>Crypto Tracking</h1>
         <nav>
             <ul>
                 <li><a href="#" id="favorites-toggle">Favorites</a></li>
+                <div id="favorites-list" class="hidden"></div>
             </ul>
         </nav>
-        <div id="favorites-list" class="hidden"></div>
     </aside>
-    <main id="main-content">
+    <main>
         <div class="top-bar">
             <input type="text" id="search" placeholder="Search for a cryptocurrency">
+            <button id="search-btn">Search</button>
             <select id="currency-select">
                 <option value="usd">USD</option>
                 <option value="eur">EUR</option>
                 <option value="gbp">GBP</option>
                 <!-- Add more currencies as needed -->
             </select>
+            <button id="convert-btn">Convert</button>
+            <button id="dark-mode-toggle">Dark Mode</button>
         </div>
         <section id="dashboard" class="active">
             <div class="top-section">
@@ -33,11 +37,15 @@
                     <h2>Bitcoin</h2>
                     <p id="btc-price">$23,376.76</p>
                     <p id="btc-change">24 Hour Change 1.45%</p>
+                    <p id="btc-market-cap">Market Cap: $438,253,000</p>
+                    <p id="btc-volume">Volume: $23,376,760</p>
                 </div>
                 <div>
                     <h2>Ethereum</h2>
                     <p id="eth-price">$1,650.13</p>
                     <p id="eth-change">24 Hour Change -0.12%</p>
+                    <p id="eth-market-cap">Market Cap: $198,374,000</p>
+                    <p id="eth-volume">Volume: $1,650,130</p>
                 </div>
                 <div>
                     <h2>Last Synced</h2>
@@ -50,30 +58,18 @@
             </div>
             <div class="crypto-list-section">
                 <h2>All Cryptocurrencies</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Icon</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>24H % Change</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="crypto-list"></tbody>
-                </table>
+                <div class="crypto-grid" id="crypto-list"></div>
+            </div>
+            <div class="additional-features">
+                <h2>Additional Features</h2>
+                <div id="news-feed">News Feed Placeholder</div>
+                <div id="price-alerts">Price Alerts Placeholder</div>
+                <div id="tax-reporting">Tax Reporting Placeholder</div>
+                <div id="historical-data">Historical Data Placeholder</div>
+                <div id="social-features">Social Features Placeholder</div>
             </div>
         </section>
     </main>
     <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
