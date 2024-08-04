@@ -17,13 +17,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const top10ChartCtx = document.getElementById("top10Chart").getContext("2d");
     const currencySelect = document.getElementById("currency-select");
     const favoritesToggle = document.getElementById("favorites-toggle");
+    const sidebarToggle = document.getElementById("sidebar-toggle");
     const darkModeToggle = document.getElementById("dark-mode-toggle");
     const body = document.body;
 
-    let favorites = [];
+    let cryptoData = [];
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
     // Toggle sidebar
-    document.getElementById("sidebar-toggle").addEventListener("click", () => {
+    sidebarToggle.addEventListener("click", () => {
         document.body.classList.toggle("sidebar-hidden");
     });
 
@@ -37,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
+            cryptoData = data;
             displayCryptocurrencies(data);
             displayTop10Chart(data);
             updateDashboard(data);
@@ -45,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Display the list of cryptocurrencies
     function displayCryptocurrencies(data) {
         cryptoList.innerHTML = "";
         data.forEach((crypto) => {
@@ -61,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Display the top 10 cryptocurrencies in a chart
     function displayTop10Chart(data) {
         const top10 = data.slice(0, 10);
         new Chart(top10ChartCtx, {
@@ -87,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Update the dashboard with Bitcoin and Ethereum data
     function updateDashboard(data) {
         const btc = data.find((crypto) => crypto.id === "bitcoin");
         const eth = data.find((crypto) => crypto.id === "ethereum");
@@ -101,18 +107,23 @@ document.addEventListener("DOMContentLoaded", () => {
         lastSynced.textContent = new Date().toLocaleString();
     }
 
+    // Add a cryptocurrency to favorites
     function addToFavorites(crypto) {
         if (!favorites.some((fav) => fav.id === crypto.id)) {
             favorites.push(crypto);
             updateFavorites();
+            localStorage.setItem("favorites", JSON.stringify(favorites));
         }
     }
 
+    // Remove a cryptocurrency from favorites
     function removeFromFavorites(cryptoId) {
         favorites = favorites.filter((crypto) => crypto.id !== cryptoId);
         updateFavorites();
+        localStorage.setItem("favorites", JSON.stringify(favorites));
     }
 
+    // Update the favorites list
     function updateFavorites() {
         favoritesList.innerHTML = favorites.map((crypto) => `
             <div class="favorite-item">
@@ -126,19 +137,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Initial fetch
-    fetchCryptocurrencies();
-
-    // Event Listeners
+    // Handle the search functionality
     searchBtn.addEventListener("click", () => {
         const searchTerm = searchInput.value.toLowerCase();
-        const filteredData = data.filter((crypto) =>
+        const filteredData = cryptoData.filter((crypto) =>
             crypto.name.toLowerCase().includes(searchTerm)
         );
         displayCryptocurrencies(filteredData);
     });
 
+    // Handle favorites toggle
     favoritesToggle.addEventListener("click", () => {
         favoritesList.classList.toggle("hidden");
     });
+
+    // Fetch initial data
+    fetchCryptocurrencies();
 });
