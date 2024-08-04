@@ -26,11 +26,11 @@ body {
 aside {
     width: 200px;
     background-color: #4CAF50;
-    color: white;
+    color: rgb(49, 10, 10);
     padding: 20px;
     position: fixed;
     height: 100%;
-    top: 0;
+    top: 5;
     left: 0;
     overflow-y: auto;
     z-index: 1000;
