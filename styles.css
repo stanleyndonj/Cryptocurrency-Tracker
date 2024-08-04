@@ -1,3 +1,4 @@
+/* styles.css */
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -23,7 +24,7 @@ body {
 aside {
     width: 200px;
     background-color: #4CAF50;
-    color: rgb(17, 15, 15);
+    color: #111;
     padding: 20px;
     position: fixed;
     height: 100%;
@@ -127,7 +128,7 @@ main {
     margin-bottom: 10px;
 }
 
-favorite-item button {
+.favorite-item button {
     background-color: #dc3545;
     color: white;
     border: none;
@@ -135,7 +136,7 @@ favorite-item button {
     cursor: pointer;
 }
 
-favorite-item button:hover {
+.favorite-item button:hover {
     background-color: #c82333;
 }
 
